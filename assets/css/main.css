@@ -4141,72 +4141,82 @@ input, select, textarea {
 }
 
 /* ============================================================
-   ASTROKIT PH - MODULES REDESIGN (Holo-Cells)
+   ASTROKIT PH - MODULES REDESIGN (Fixed & Overlap-Free)
    ============================================================ */
 
-/* 1. LAYOUT: Fix the "Incomplete Lines" by using a real Grid */
+/* 1. LAYOUT: The Grid Container */
 #two .features {
     display: grid;
-    /* This creates 2 columns automatically, switching to 1 on mobile */
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 30px; /* Actual space between the boxes */
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
     background: transparent;
     border: none;
 }
 
-/* 2. THE CELLS: Glass Panels instead of flat boxes */
+/* 2. THE CELLS: Glass Panels with Vertical Stacking */
 #two .features section {
-    width: 100% !important; /* Forces full width in the grid cell */
-    border: 1px solid rgba(102, 252, 241, 0.2) !important; /* Full border */
-    background: rgba(11, 12, 16, 0.6); /* Darker glass background */
+    /* Flexbox forces the icon and text to stack vertically */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    
+    width: 100% !important;
+    height: 100%; /* Ensures all boxes are same height */
+    background: rgba(11, 12, 16, 0.6);
     backdrop-filter: blur(5px);
     padding: 40px;
-    border-radius: 0px; /* Keep it square/technical */
+    border: 1px solid rgba(102, 252, 241, 0.2) !important;
+    border-radius: 4px;
     transition: all 0.3s ease;
     
-    /* Remove the old Hyperspace border logic */
+    /* Resetting original theme margins */
     margin: 0 !important;
-    border-top: 1px solid rgba(102, 252, 241, 0.2) !important;
-    border-left: 1px solid rgba(102, 252, 241, 0.2) !important;
 }
 
-/* Hover Effect: The entire cell lights up */
+/* Hover Effect */
 #two .features section:hover {
     background: rgba(11, 12, 16, 0.9);
-    border-color: #66fcf1 !important; /* Bright Cyan Border */
+    border-color: #66fcf1 !important;
     box-shadow: 0 0 30px rgba(102, 252, 241, 0.15);
     transform: translateY(-5px);
 }
 
-/* 3. THE ICONS: Remove the "Bubble", make it a Hologram */
+/* 3. THE ICONS: Fixed Spacing */
 #two .features section .icon.major {
-    background: transparent; /* Removes the white circle */
+    position: relative;
+    background: transparent;
     width: auto;
     height: auto;
-    line-height: 1;
-    margin-bottom: 25px;
-    text-align: left; /* Aligns icon with text */
+    margin: 0 0 25px 0 !important; /* Forces 25px space below icon */
     padding: 0;
-    border-radius: 0;
+    top: auto;
+    left: auto;
+    line-height: 1;
 }
 
 /* The Glowing Glyph */
 #two .features section .icon.major:before {
-    font-size: 3em; /* Make it BIG */
-    color: #66fcf1; /* Neon Cyan */
-    text-shadow: 0 0 20px rgba(102, 252, 241, 0.8); /* The Glow */
-    font-weight: 900; /* Thicker icons */
+    font-size: 3.5em; /* Large Neon Icon */
+    color: #66fcf1;
+    text-shadow: 0 0 20px rgba(102, 252, 241, 0.6);
+    display: block; /* Ensures it takes up its own line */
 }
 
-/* 4. TYPOGRAPHY: Align text to the new look */
+/* 4. TYPOGRAPHY: Spacing adjustments */
 #two .features section h3 {
     margin-top: 0;
-    font-size: 1.2em;
-    letter-spacing: 0.15em;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+    letter-spacing: 0.1em;
     color: #ffffff;
+    font-family: 'Orbitron', sans-serif;
+    line-height: 1.4;
 }
 
 #two .features section p {
     margin-bottom: 0;
-    opacity: 0.8;
+    font-size: 1rem;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
 }
