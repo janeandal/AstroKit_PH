@@ -1,0 +1,263 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>AstroKit — Active Radar</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
+		<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+		
+		<style>
+			/* --- RADAR SPECIFIC STYLES --- */
+			
+			/* The Main Container: Split Screen (Radar Left, Data Right) */
+			.radar-console {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 40px;
+				align-items: center;
+				justify-content: center;
+				margin-top: 2em;
+			}
+
+			/* 1. THE RADAR SCREEN */
+			.radar-screen {
+				position: relative;
+				width: 500px;
+				height: 500px;
+				background: #000;
+				border-radius: 50%;
+				border: 2px solid #66fcf1;
+				box-shadow: 0 0 50px rgba(102, 252, 241, 0.2);
+				overflow: hidden;
+				/* Grid Lines inside radar */
+				background-image: 
+					radial-gradient(transparent 33%, rgba(102, 252, 241, 0.3) 34%, transparent 35%, transparent 66%, rgba(102, 252, 241, 0.3) 67%, transparent 68%),
+					linear-gradient(90deg, transparent 49%, rgba(102, 252, 241, 0.3) 50%, transparent 51%),
+					linear-gradient(0deg, transparent 49%, rgba(102, 252, 241, 0.3) 50%, transparent 51%);
+			}
+
+			/* The Moving Sweep (Scanner) */
+			.radar-sweep {
+				position: absolute;
+				top: 0; left: 0; right: 0; bottom: 0;
+				border-radius: 50%;
+				background: conic-gradient(from 0deg, transparent 0deg, rgba(102, 252, 241, 0.5) 20deg, transparent 60deg);
+				animation: radarSpin 4s linear infinite;
+				z-index: 2;
+				pointer-events: none; /* Let us click through it */
+			}
+
+			@keyframes radarSpin {
+				from { transform: rotate(0deg); }
+				to { transform: rotate(360deg); }
+			}
+
+			/* The Targets (Blips) */
+			.blip {
+				position: absolute;
+				width: 15px;
+				height: 15px;
+				background: #fff;
+				border-radius: 50%;
+				box-shadow: 0 0 10px #fff, 0 0 20px #66fcf1;
+				cursor: pointer;
+				z-index: 3;
+				transition: all 0.3s ease;
+				animation: pulse 2s infinite;
+			}
+
+			.blip:hover {
+				background: #66fcf1;
+				transform: scale(1.5);
+			}
+
+			/* Positions of stars (Simulated) */
+			#sun { top: 50%; left: 50%; width: 25px; height: 25px; background: #ffcc00; box-shadow: 0 0 30px #ffaa00; }
+			#cas-a { top: 20%; left: 30%; }
+			#cyg-a { top: 70%; left: 80%; }
+			#sag-a { top: 60%; left: 20%; }
+
+			@keyframes pulse {
+				0% { opacity: 0.5; }
+				50% { opacity: 1; }
+				100% { opacity: 0.5; }
+			}
+
+			/* 2. THE DATA PANEL (Right Side) */
+			.data-panel {
+				flex: 1;
+				min-width: 300px;
+				background: rgba(11, 12, 16, 0.8);
+				border: 1px solid #66fcf1;
+				padding: 30px;
+				font-family: 'Roboto Mono', monospace;
+				position: relative;
+			}
+
+			.data-panel h2 {
+				color: #66fcf1;
+				border-bottom: 1px solid rgba(102, 252, 241, 0.3);
+				padding-bottom: 10px;
+				margin-bottom: 20px;
+			}
+
+			.data-row {
+				display: flex;
+				justify-content: space-between;
+				margin-bottom: 10px;
+				border-bottom: 1px solid rgba(255,255,255,0.1);
+				padding-bottom: 5px;
+			}
+
+			.data-label { color: #8892b0; }
+			.data-value { color: #fff; font-weight: bold; }
+			
+			/* Typing animation effect */
+			.typing-effect {
+				border-right: 2px solid #66fcf1;
+				animation: typeBlink 0.75s step-end infinite;
+			}
+			@keyframes typeBlink { 50% { border-color: transparent; } }
+
+			/* Responsive */
+			@media screen and (max-width: 980px) {
+				.radar-screen { width: 300px; height: 300px; }
+			}
+		</style>
+	</head>
+	<body class="is-preload">
+
+		<section id="sidebar">
+			<div class="inner">
+				<nav>
+					<ul>
+						<li><a href="../index.html">Home</a></li>
+						<li><a href="../generic.html">Modules</a></li>
+						<li><a href="#" class="active">Sky Map</a></li>
+					</ul>
+				</nav>
+			</div>
+		</section>
+
+		<div id="wrapper">
+
+			<section id="main" class="wrapper style1">
+				<div class="inner">
+					<h1 class="major">Live Radio Sky Radar</h1>
+					<p>Click on any detected radio source (blip) to analyze signal properties.</p>
+
+					<div class="radar-console">
+						
+						<div class="radar-screen">
+							<div class="radar-sweep"></div>
+							
+							<div id="sun" class="blip" onclick="loadData('Sun')"></div>
+							<div id="cas-a" class="blip" onclick="loadData('Cassiopeia A')"></div>
+							<div id="cyg-a" class="blip" onclick="loadData('Cygnus A')"></div>
+							<div id="sag-a" class="blip" onclick="loadData('Sagittarius A*')"></div>
+						</div>
+
+						<div class="data-panel" id="data-screen">
+							<h2 id="target-name">NO TARGET LOCKED</h2>
+							
+							<div class="data-row">
+								<span class="data-label">TYPE:</span>
+								<span class="data-value" id="target-type">--</span>
+							</div>
+							<div class="data-row">
+								<span class="data-label">FLUX DENSITY:</span>
+								<span class="data-value" id="target-flux">0.00 Jy</span>
+							</div>
+							<div class="data-row">
+								<span class="data-label">DISTANCE:</span>
+								<span class="data-value" id="target-dist">--</span>
+							</div>
+							<div class="data-row">
+								<span class="data-label">STATUS:</span>
+								<span class="data-value" style="color:red;" id="target-status">SCANNING...</span>
+							</div>
+
+							<p style="margin-top:20px; font-size:0.9em; opacity:0.8;" id="target-desc">
+								Select a target on the radar screen to view astronomical data.
+							</p>
+						</div>
+
+					</div>
+				</div>
+			</section>
+
+		</div>
+
+		<footer id="footer" class="wrapper style1-alt">
+			<div class="inner">
+				<ul class="menu">
+					<li>&copy; AstroKit PH. Radar System v1.0</li>
+				</ul>
+			</div>
+		</footer>
+
+		<script src="../assets/js/jquery.min.js"></script>
+		<script src="../assets/js/jquery.scrollex.min.js"></script>
+		<script src="../assets/js/jquery.scrolly.min.js"></script>
+		<script src="../assets/js/browser.min.js"></script>
+		<script src="../assets/js/breakpoints.min.js"></script>
+		<script src="../assets/js/util.js"></script>
+		<script src="../assets/js/main.js"></script>
+
+		<script>
+			// Database of Stars
+			const spaceData = {
+				'Sun': {
+					type: 'G-Type Main Sequence Star',
+					flux: '1,000,000+ Jy (Variable)',
+					dist: '1 AU',
+					status: 'LOCKED',
+					desc: 'The brightest radio source in our sky. It emits thermal radio emission from its chromosphere and corona.'
+				},
+				'Cassiopeia A': {
+					type: 'Supernova Remnant',
+					flux: '2,400 Jy',
+					dist: '11,000 ly',
+					status: 'LOCKED',
+					desc: 'A remnant of a massive star that exploded ~300 years ago. It is the strongest radio source outside our solar system.'
+				},
+				'Cygnus A': {
+					type: 'Radio Galaxy',
+					flux: '2,100 Jy',
+					dist: '760 Million ly',
+					status: 'LOCKED',
+					desc: 'One of the most powerful radio sources in the sky. A distant galaxy with a supermassive black hole shooting jets of plasma.'
+				},
+				'Sagittarius A*': {
+					type: 'Supermassive Black Hole',
+					flux: 'Variable',
+					dist: '26,000 ly',
+					status: 'LOCKED',
+					desc: 'The supermassive black hole at the center of the Milky Way. A compact radio source surrounded by hot gas.'
+				}
+			};
+
+			// Function to update the screen
+			function loadData(target) {
+				const data = spaceData[target];
+				
+				// Update Text
+				document.getElementById('target-name').innerText = target;
+				document.getElementById('target-name').classList.add('typing-effect'); // Add blink effect
+				
+				document.getElementById('target-type').innerText = data.type;
+				document.getElementById('target-flux').innerText = data.flux;
+				document.getElementById('target-dist').innerText = data.dist;
+				
+				const statusEl = document.getElementById('target-status');
+				statusEl.innerText = data.status;
+				statusEl.style.color = '#66fcf1'; // Turn green/cyan
+				
+				document.getElementById('target-desc').innerText = data.desc;
+			}
+		</script>
+
+	</body>
+</html>
