@@ -3908,3 +3908,118 @@ input, select, textarea {
 			}
 
 		}
+
+
+
+
+/* --- UPGRADE 1: ANIMATED STAR FIELD (Hyperdrive Effect) --- */
+@keyframes animStar {
+    from { transform: translateY(0px); }
+    to { transform: translateY(-2000px); }
+}
+
+#intro {
+    position: relative;
+    /* Darker, deeper space gradient */
+    background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* Layer 1: Small distant stars */
+#intro:before {
+    content: " ";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 200%;
+    z-index: -1;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 160px 120px, #ddd, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    animation: animStar 100s linear infinite;
+    opacity: 0.8;
+}
+
+/* Layer 2: Bigger, closer stars */
+#intro:after {
+    content: " ";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 200%;
+    z-index: -1;
+    background-image: 
+        radial-gradient(3px 3px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(3px 3px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(3px 3px at 130px 80px, #ffffff, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 250px 250px;
+    animation: animStar 50s linear infinite;
+    opacity: 0.6;
+}
+
+/* --- UPGRADE 2: NEON GLOW & FLOATING LOGO --- */
+/* The Main Title Glow */
+#intro h1 {
+    text-shadow: 0 0 10px rgba(102, 252, 241, 0.7), 
+                 0 0 20px rgba(102, 252, 241, 0.5);
+}
+
+/* Floating animation for the logo */
+@keyframes float {
+	0% { transform: translatey(0px); }
+	50% { transform: translatey(-20px); }
+	100% { transform: translatey(0px); }
+}
+
+#intro img {
+    /* Adds a soft backlight to the logo and makes it float */
+    box-shadow: 0 0 50px rgba(31, 40, 51, 0.8), 
+                0 0 20px rgba(102, 252, 241, 0.2);
+    animation: float 6s ease-in-out infinite;
+}
+
+/* --- UPGRADE 3: TECHNICAL GRID TEXTURE (Holo-Deck Vibe) --- */
+/* Applies a subtle blueprint grid to the Features and Module sections */
+.wrapper.style2, .wrapper.style3 {
+    background-color: #0b0c10;
+    background-image: 
+        linear-gradient(rgba(102, 252, 241, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(102, 252, 241, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    background-position: center center;
+}
+
+/* --- UPGRADE 4: BUTTON THRUSTERS (Liquid Fill Effect) --- */
+.button {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    z-index: 1;
+    border: 1px solid #66fcf1 !important;
+    box-shadow: 0 0 10px rgba(102, 252, 241, 0.1);
+}
+
+.button:hover {
+    color: #0b0c10 !important; /* Text turns black for contrast */
+    box-shadow: 0 0 20px rgba(102, 252, 241, 0.6); /* Bright neon glow */
+    transform: translateY(-3px); /* Button physically lifts up */
+}
+
+/* The liquid fill animation */
+.button:before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 0%; height: 100%;
+    background: #66fcf1;
+    transition: all 0.4s ease;
+    z-index: -1;
+}
+
+.button:hover:before {
+    width: 100%;
+}
